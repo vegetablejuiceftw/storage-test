@@ -4,26 +4,27 @@ from pprint import pprint
 import pandas as pd
 from influxdb import InfluxDBClient, DataFrameClient
 
-df = pd.read_parquet("test.gzip.parquet")
+df = pd.read_parquet("test2-large.gzip.parquet")
 df = df.fillna(0)
 
 print(df.dtypes)
 print(df.index[:1])
+print(len(df))
 
-db_name = 'test'
+db_name = 'test_large_4'
  
 # Testing dataframe client
-client = DataFrameClient('localhost', 8086, 'root', 'root', db_name)
-print(client)
-created = client.create_database(db_name)
-print(created)
-
-client.write_points(df, db_name, protocol="line", batch_size=1500)
-print("influx done")
-
+# client = DataFrameClient('localhost', 8086, 'root', 'root', db_name)
+# print(client)
+# created = client.create_database(db_name)
+# print(created)
+#
+# client.write_points(df, db_name, protocol="line", batch_size=100)
+# print("influx done")
+#
 
 # testing json client
-db_name = 'json'
+db_name = 'json_2'
 
 client = InfluxDBClient('localhost', 8086, 'root', 'root', db_name)
 client.create_database(db_name)
@@ -41,11 +42,11 @@ for index, row in df.iterrows():
 
     temp.append(json_body)
 
-    if len(temp) == 10000:
-        
+    if len(temp) == 100:
+
         client.write_points(temp)
 
         temp = []
 
-        print(index)
-        pprint(json_body)
+        print(index, index.isoformat())
+        # pprint(json_body)
